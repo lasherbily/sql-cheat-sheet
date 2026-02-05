@@ -1,0 +1,1015 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SQL 速查表 | 结构化完整版</title>
+    <!-- 引入Tailwind CSS（样式框架，快速开发） -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- 引入Prism.js（代码高亮，支持SQL语法） -->
+    <link href="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/themes/prism-tomorrow.min.css" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/prism.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/components/prism-sql.min.js"></script>
+    <!-- 自定义Tailwind配置 -->
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        primary: '#2563eb',
+                        secondary: '#475569',
+                        dark: '#0f172a',
+                        light: '#f8fafc',
+                    },
+                    fontFamily: {
+                        sans: ['Inter', 'system-ui', 'sans-serif'],
+                        mono: ['JetBrains Mono', 'monospace'],
+                    },
+                }
+            }
+        }
+    </script>
+    <style type="text/tailwindcss">
+        @layer utilities {
+            .content-auto {
+                content-visibility: auto;
+            }
+            .scrollbar-hide {
+                -ms-overflow-style: none;
+                scrollbar-width: none;
+            }
+            .scrollbar-hide::-webkit-scrollbar {
+                display: none;
+            }
+            .nav-active {
+                @apply bg-primary/10 text-primary border-l-4 border-primary;
+            }
+        }
+    </style>
+</head>
+<body class="bg-gray-50 font-sans text-dark">
+    <!-- 顶部导航栏 -->
+    <header class="sticky top-0 z-50 bg-white shadow-sm">
+        <div class="container mx-auto px-4 py-4 flex justify-between items-center">
+            <h1 class="text-[clamp(1.5rem,3vw,2rem)] font-bold text-primary">SQL 速查表</h1>
+            <p class="hidden sm:block text-secondary">结构化完整版 | 覆盖DDL/DML/DQL/高级语法</p>
+            <!-- 移动端菜单按钮 -->
+            <button id="menuBtn" class="sm:hidden text-dark text-xl">
+                <i class="fa-solid fa-bars"></i>
+            </button>
+        </div>
+    </header>
+
+    <div class="container mx-auto px-4 py-6 flex flex-col lg:flex-row gap-6">
+        <!-- 左侧侧边导航（固定，桌面端） -->
+        <aside id="sidebar" class="lg:w-64 w-full lg:sticky lg:top-24 h-fit lg:h-[calc(100vh-8rem)] bg-white rounded-lg shadow-sm p-4 overflow-y-auto scrollbar-hide hidden sm:block">
+            <h2 class="text-lg font-semibold mb-4 pb-2 border-b border-gray-200">目录导航</h2>
+            <nav class="space-y-1">
+                <a href="#ddl" class="nav-item block px-3 py-2 rounded-md hover:bg-gray-100 transition-colors">一、数据定义语言 (DDL)</a>
+                <a href="#dml" class="nav-item block px-3 py-2 rounded-md hover:bg-gray-100 transition-colors">二、数据操作语言 (DML)</a>
+                <a href="#dql" class="nav-item block px-3 py-2 rounded-md hover:bg-gray-100 transition-colors">三、数据查询语言 (DQL)</a>
+                <a href="#join" class="nav-item block px-3 py-2 rounded-md hover:bg-gray-100 transition-colors">四、连接查询 (JOIN)</a>
+                <a href="#subquery" class="nav-item block px-3 py-2 rounded-md hover:bg-gray-100 transition-colors">五、子查询与集合操作</a>
+                <a href="#function" class="nav-item block px-3 py-2 rounded-md hover:bg-gray-100 transition-colors">六、常用函数</a>
+                <a href="#window" class="nav-item block px-3 py-2 rounded-md hover:bg-gray-100 transition-colors">七、窗口函数</a>
+                <a href="#index" class="nav-item block px-3 py-2 rounded-md hover:bg-gray-100 transition-colors">八、索引管理</a>
+                <a href="#view" class="nav-item block px-3 py-2 rounded-md hover:bg-gray-100 transition-colors">九、视图</a>
+                <a href="#procedure" class="nav-item block px-3 py-2 rounded-md hover:bg-gray-100 transition-colors">十、存储过程和函数</a>
+                <a href="#tcl" class="nav-item block px-3 py-2 rounded-md hover:bg-gray-100 transition-colors">十一、事务控制 (TCL)</a>
+                <a href="#dcl" class="nav-item block px-3 py-2 rounded-md hover:bg-gray-100 transition-colors">十二、权限管理 (DCL)</a>
+                <a href="#tips" class="nav-item block px-3 py-2 rounded-md hover:bg-gray-100 transition-colors">十三、实用技巧</a>
+            </nav>
+        </aside>
+
+        <!-- 主内容区 -->
+        <main class="flex-1 bg-white rounded-lg shadow-sm p-6">
+            <!-- 一、数据定义语言 (DDL) -->
+            <section id="ddl" class="mb-10">
+                <div class="flex justify-between items-center mb-4 cursor-pointer section-header">
+                    <h2 class="text-2xl font-bold text-primary">📌 一、数据定义语言 (DDL)</h2>
+                    <button class="text-xl text-secondary toggle-btn">−</button>
+                </div>
+                <div class="section-content space-y-6">
+                    <!-- 1.1 数据库操作 -->
+                    <div>
+                        <h3 class="text-xl font-semibold mb-2">1.1 数据库操作</h3>
+                        <div class="relative">
+                            <button class="copy-btn absolute top-2 right-2 bg-primary/10 hover:bg-primary/20 text-primary px-2 py-1 rounded text-sm">复制</button>
+                            <pre><code class="language-sql">-- 创建数据库
+CREATE DATABASE database_name;
+
+-- 删除数据库
+DROP DATABASE database_name;
+
+-- 备份数据库
+BACKUP DATABASE database_name TO DISK = 'filepath';
+
+-- 差异备份
+BACKUP DATABASE database_name TO DISK = 'filepath' WITH DIFFERENTIAL;
+
+-- 使用数据库
+USE database_name;</code></pre>
+                        </div>
+                    </div>
+
+                    <!-- 1.2 表操作 -->
+                    <div>
+                        <h3 class="text-xl font-semibold mb-2">1.2 表操作</h3>
+                        <div class="relative">
+                            <button class="copy-btn absolute top-2 right-2 bg-primary/10 hover:bg-primary/20 text-primary px-2 py-1 rounded text-sm">复制</button>
+                            <pre><code class="language-sql">-- 创建表
+CREATE TABLE table_name (
+    column1 datatype [constraints],
+    column2 datatype [constraints],
+    column3 datatype [constraints],
+    ...
+    [table_constraints]
+);
+
+-- 删除表
+DROP TABLE table_name;
+
+-- 清空表（保留结构）
+TRUNCATE TABLE table_name;
+
+-- 修改表结构
+ALTER TABLE table_name
+ADD column_name datatype;          -- 添加列
+
+ALTER TABLE table_name
+DROP COLUMN column_name;           -- 删除列
+
+ALTER TABLE table_name
+ALTER COLUMN column_name datatype; -- 修改列数据类型（SQL Server）
+
+ALTER TABLE table_name
+MODIFY column_name datatype;       -- 修改列数据类型（MySQL）
+
+ALTER TABLE table_name
+RENAME COLUMN old_name TO new_name;-- 重命名列
+
+ALTER TABLE table_name
+RENAME TO new_table_name;          -- 重命名表</code></pre>
+                        </div>
+                    </div>
+
+                    <!-- 1.3 约束 -->
+                    <div>
+                        <h3 class="text-xl font-semibold mb-2">1.3 约束 (Constraints)</h3>
+                        <div class="relative">
+                            <button class="copy-btn absolute top-2 right-2 bg-primary/10 hover:bg-primary/20 text-primary px-2 py-1 rounded text-sm">复制</button>
+                            <pre><code class="language-sql">-- 主键约束
+CREATE TABLE table_name (
+    id INT PRIMARY KEY,
+    ...
+);
+
+-- 外键约束
+CREATE TABLE table_name (
+    customer_id INT,
+    FOREIGN KEY (customer_id) REFERENCES Customers(id)
+);
+
+-- 唯一约束
+CREATE TABLE table_name (
+    email VARCHAR(100) UNIQUE,
+    ...
+);
+
+-- 非空约束
+CREATE TABLE table_name (
+    name VARCHAR(100) NOT NULL,
+    ...
+);
+
+-- 检查约束
+CREATE TABLE table_name (
+    age INT CHECK (age >= 18),
+    salary DECIMAL CHECK (salary > 0)
+);
+
+-- 默认值
+CREATE TABLE table_name (
+    created_at DATE DEFAULT CURRENT_DATE,
+    is_active BOOLEAN DEFAULT TRUE
+);</code></pre>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- 二、数据操作语言 (DML) -->
+            <section id="dml" class="mb-10">
+                <div class="flex justify-between items-center mb-4 cursor-pointer section-header">
+                    <h2 class="text-2xl font-bold text-primary">📌 二、数据操作语言 (DML)</h2>
+                    <button class="text-xl text-secondary toggle-btn">−</button>
+                </div>
+                <div class="section-content space-y-6">
+                    <!-- 2.1 插入数据 -->
+                    <div>
+                        <h3 class="text-xl font-semibold mb-2">2.1 插入数据</h3>
+                        <div class="relative">
+                            <button class="copy-btn absolute top-2 right-2 bg-primary/10 hover:bg-primary/20 text-primary px-2 py-1 rounded text-sm">复制</button>
+                            <pre><code class="language-sql">-- 插入完整行
+INSERT INTO table_name VALUES (value1, value2, value3, ...);
+
+-- 插入指定列
+INSERT INTO table_name (column1, column2, column3, ...)
+VALUES (value1, value2, value3, ...);
+
+-- 插入多行
+INSERT INTO table_name (column1, column2, ...)
+VALUES 
+    (value1a, value2a, ...),
+    (value1b, value2b, ...),
+    (value1c, value2c, ...);
+
+-- 从其他表插入
+INSERT INTO table2 (column1, column2, ...)
+SELECT column1, column2, ...
+FROM table1
+WHERE condition;</code></pre>
+                        </div>
+                    </div>
+
+                    <!-- 2.2 更新数据 -->
+                    <div>
+                        <h3 class="text-xl font-semibold mb-2">2.2 更新数据</h3>
+                        <div class="relative">
+                            <button class="copy-btn absolute top-2 right-2 bg-primary/10 hover:bg-primary/20 text-primary px-2 py-1 rounded text-sm">复制</button>
+                            <pre><code class="language-sql">-- 更新所有行
+UPDATE table_name
+SET column1 = value1, column2 = value2, ...;
+
+-- 更新满足条件的行
+UPDATE table_name
+SET column1 = value1, column2 = value2, ...
+WHERE condition;
+
+-- 使用子查询更新
+UPDATE table_name
+SET column1 = (SELECT ...)
+WHERE condition;</code></pre>
+                        </div>
+                    </div>
+
+                    <!-- 2.3 删除数据 -->
+                    <div>
+                        <h3 class="text-xl font-semibold mb-2">2.3 删除数据</h3>
+                        <div class="relative">
+                            <button class="copy-btn absolute top-2 right-2 bg-primary/10 hover:bg-primary/20 text-primary px-2 py-1 rounded text-sm">复制</button>
+                            <pre><code class="language-sql">-- 删除所有行（可回滚）
+DELETE FROM table_name;
+
+-- 删除满足条件的行
+DELETE FROM table_name
+WHERE condition;
+
+-- 快速清空表（不可回滚）
+TRUNCATE TABLE table_name;</code></pre>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- 三、数据查询语言 (DQL) -->
+            <section id="dql" class="mb-10">
+                <div class="flex justify-between items-center mb-4 cursor-pointer section-header">
+                    <h2 class="text-2xl font-bold text-primary">📌 三、数据查询语言 (DQL)</h2>
+                    <button class="text-xl text-secondary toggle-btn">−</button>
+                </div>
+                <div class="section-content space-y-6">
+                    <!-- 3.1 基本查询 -->
+                    <div>
+                        <h3 class="text-xl font-semibold mb-2">3.1 基本查询</h3>
+                        <div class="relative">
+                            <button class="copy-btn absolute top-2 right-2 bg-primary/10 hover:bg-primary/20 text-primary px-2 py-1 rounded text-sm">复制</button>
+                            <pre><code class="language-sql">-- 查询所有列
+SELECT * FROM table_name;
+
+-- 查询指定列
+SELECT column1, column2, ... FROM table_name;
+
+-- 查询唯一值
+SELECT DISTINCT column1, column2, ... FROM table_name;
+
+-- 使用别名
+SELECT 
+    column1 AS alias1,
+    column2 AS alias2,
+    ...
+FROM table_name;
+
+-- 限制返回行数
+SELECT * FROM table_name LIMIT 10;           -- MySQL/PostgreSQL
+SELECT TOP 10 * FROM table_name;             -- SQL Server
+SELECT * FROM table_name WHERE ROWNUM <= 10; -- Oracle</code></pre>
+                        </div>
+                    </div>
+
+                    <!-- 3.2 条件筛选 -->
+                    <div>
+                        <h3 class="text-xl font-semibold mb-2">3.2 条件筛选</h3>
+                        <div class="relative">
+                            <button class="copy-btn absolute top-2 right-2 bg-primary/10 hover:bg-primary/20 text-primary px-2 py-1 rounded text-sm">复制</button>
+                            <pre><code class="language-sql">-- WHERE 子句
+SELECT * FROM table_name WHERE condition;
+
+-- 比较运算符
+=, <>, !=, >, <, >=, <=
+
+-- 逻辑运算符
+AND, OR, NOT
+
+-- BETWEEN（包含边界）
+SELECT * FROM table_name
+WHERE column BETWEEN value1 AND value2;
+
+-- IN 操作符
+SELECT * FROM table_name
+WHERE column IN (value1, value2, value3, ...);
+
+-- LIKE 模糊匹配
+SELECT * FROM table_name
+WHERE column LIKE pattern;
+
+-- 模式匹配
+%    -- 任意字符序列（0或多个字符）
+_    -- 单个任意字符
+[]   -- 指定范围内的单个字符（SQL Server）
+[^]  -- 不在指定范围内的单个字符（SQL Server）
+
+-- IS NULL / IS NOT NULL
+SELECT * FROM table_name
+WHERE column IS NULL;
+
+SELECT * FROM table_name
+WHERE column IS NOT NULL;</code></pre>
+                        </div>
+                    </div>
+
+                    <!-- 3.3 排序与分组 -->
+                    <div>
+                        <h3 class="text-xl font-semibold mb-2">3.3 排序与分组</h3>
+                        <div class="relative">
+                            <button class="copy-btn absolute top-2 right-2 bg-primary/10 hover:bg-primary/20 text-primary px-2 py-1 rounded text-sm">复制</button>
+                            <pre><code class="language-sql">-- 排序
+SELECT * FROM table_name
+ORDER BY column1 [ASC|DESC], column2 [ASC|DESC], ...;
+
+-- 分组
+SELECT column1, aggregate_function(column2)
+FROM table_name
+GROUP BY column1;
+
+-- HAVING 筛选分组
+SELECT column1, COUNT(*)
+FROM table_name
+GROUP BY column1
+HAVING COUNT(*) > 1;</code></pre>
+                        </div>
+                    </div>
+
+                    <!-- 3.4 聚合函数 -->
+                    <div>
+                        <h3 class="text-xl font-semibold mb-2">3.4 聚合函数</h3>
+                        <div class="relative">
+                            <button class="copy-btn absolute top-2 right-2 bg-primary/10 hover:bg-primary/20 text-primary px-2 py-1 rounded text-sm">复制</button>
+                            <pre><code class="language-sql">COUNT()     -- 计数
+SUM()       -- 求和
+AVG()       -- 平均值
+MIN()       -- 最小值
+MAX()       -- 最大值
+STDDEV()    -- 标准差
+VARIANCE()  -- 方差
+
+-- 示例
+SELECT 
+    COUNT(*) AS total_rows,
+    COUNT(DISTINCT column) AS unique_values,
+    SUM(column) AS total,
+    AVG(column) AS average,
+    MIN(column) AS minimum,
+    MAX(column) AS maximum
+FROM table_name;</code></pre>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- 四、连接查询 (JOIN) -->
+            <section id="join" class="mb-10">
+                <div class="flex justify-between items-center mb-4 cursor-pointer section-header">
+                    <h2 class="text-2xl font-bold text-primary">📌 四、连接查询 (JOIN)</h2>
+                    <button class="text-xl text-secondary toggle-btn">−</button>
+                </div>
+                <div class="section-content space-y-6">
+                    <!-- 4.1 连接类型 -->
+                    <div>
+                        <h3 class="text-xl font-semibold mb-2">4.1 连接类型</h3>
+                        <div class="relative">
+                            <button class="copy-btn absolute top-2 right-2 bg-primary/10 hover:bg-primary/20 text-primary px-2 py-1 rounded text-sm">复制</button>
+                            <pre><code class="language-sql">-- 内连接（返回匹配的行）
+SELECT columns
+FROM table1
+INNER JOIN table2 ON table1.column = table2.column;
+
+-- 左外连接（返回左表所有行 + 匹配的右表行）
+SELECT columns
+FROM table1
+LEFT JOIN table2 ON table1.column = table2.column;
+
+-- 右外连接（返回右表所有行 + 匹配的左表行）
+SELECT columns
+FROM table1
+RIGHT JOIN table2 ON table1.column = table2.column;
+
+-- 全外连接（返回所有匹配和不匹配的行）
+SELECT columns
+FROM table1
+FULL OUTER JOIN table2 ON table1.column = table2.column;
+
+-- 交叉连接（笛卡尔积）
+SELECT columns
+FROM table1
+CROSS JOIN table2;
+
+-- 自连接
+SELECT e1.name AS employee, e2.name AS manager
+FROM employees e1
+LEFT JOIN employees e2 ON e1.manager_id = e2.id;</code></pre>
+                        </div>
+                    </div>
+
+                    <!-- 4.2 多表连接 -->
+                    <div>
+                        <h3 class="text-xl font-semibold mb-2">4.2 多表连接</h3>
+                        <div class="relative">
+                            <button class="copy-btn absolute top-2 right-2 bg-primary/10 hover:bg-primary/20 text-primary px-2 py-1 rounded text-sm">复制</button>
+                            <pre><code class="language-sql">SELECT 
+    t1.column1,
+    t2.column2,
+    t3.column3
+FROM table1 t1
+INNER JOIN table2 t2 ON t1.id = t2.table1_id
+LEFT JOIN table3 t3 ON t2.id = t3.table2_id
+WHERE condition;</code></pre>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- 五、子查询与集合操作 -->
+            <section id="subquery" class="mb-10">
+                <div class="flex justify-between items-center mb-4 cursor-pointer section-header">
+                    <h2 class="text-2xl font-bold text-primary">📌 五、子查询与集合操作</h2>
+                    <button class="text-xl text-secondary toggle-btn">−</button>
+                </div>
+                <div class="section-content space-y-6">
+                    <!-- 5.1 子查询 -->
+                    <div>
+                        <h3 class="text-xl font-semibold mb-2">5.1 子查询</h3>
+                        <div class="relative">
+                            <button class="copy-btn absolute top-2 right-2 bg-primary/10 hover:bg-primary/20 text-primary px-2 py-1 rounded text-sm">复制</button>
+                            <pre><code class="language-sql">-- 标量子查询（返回单个值）
+SELECT * FROM table1
+WHERE column = (SELECT MAX(column) FROM table2);
+
+-- 列子查询（返回单列多行）
+SELECT * FROM table1
+WHERE column IN (SELECT column FROM table2 WHERE condition);
+
+-- 行子查询（返回单行多列）
+SELECT * FROM table1
+WHERE (column1, column2) = (
+    SELECT column1, column2 
+    FROM table2 
+    WHERE id = 1
+);
+
+-- 表子查询（返回多行多列）
+SELECT * 
+FROM (SELECT * FROM table1 WHERE condition) AS subquery
+WHERE condition;
+
+-- EXISTS 子查询
+SELECT * FROM table1
+WHERE EXISTS (SELECT 1 FROM table2 WHERE table1.id = table2.table1_id);
+
+-- 相关子查询
+SELECT 
+    name,
+    salary,
+    (SELECT AVG(salary) FROM employees e2 WHERE e1.department = e2.department) AS dept_avg
+FROM employees e1;</code></pre>
+                        </div>
+                    </div>
+
+                    <!-- 5.2 集合操作 -->
+                    <div>
+                        <h3 class="text-xl font-semibold mb-2">5.2 集合操作</h3>
+                        <div class="relative">
+                            <button class="copy-btn absolute top-2 right-2 bg-primary/10 hover:bg-primary/20 text-primary px-2 py-1 rounded text-sm">复制</button>
+                            <pre><code class="language-sql">-- UNION（合并结果集，去重）
+SELECT column1, column2 FROM table1
+UNION
+SELECT column1, column2 FROM table2;
+
+-- UNION ALL（合并结果集，不去重）
+SELECT column1, column2 FROM table1
+UNION ALL
+SELECT column1, column2 FROM table2;
+
+-- INTERSECT（交集）
+SELECT column1, column2 FROM table1
+INTERSECT
+SELECT column1, column2 FROM table2;
+
+-- EXCEPT/MINUS（差集）
+SELECT column1, column2 FROM table1
+EXCEPT
+SELECT column1, column2 FROM table2;</code></pre>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- 六、常用函数 -->
+            <section id="function" class="mb-10">
+                <div class="flex justify-between items-center mb-4 cursor-pointer section-header">
+                    <h2 class="text-2xl font-bold text-primary">📌 六、常用函数</h2>
+                    <button class="text-xl text-secondary toggle-btn">−</button>
+                </div>
+                <div class="section-content space-y-6">
+                    <!-- 6.1 字符串函数 -->
+                    <div>
+                        <h3 class="text-xl font-semibold mb-2">6.1 字符串函数</h3>
+                        <div class="relative">
+                            <button class="copy-btn absolute top-2 right-2 bg-primary/10 hover:bg-primary/20 text-primary px-2 py-1 rounded text-sm">复制</button>
+                            <pre><code class="language-sql">CONCAT(str1, str2, ...)       -- 连接字符串
+SUBSTRING(str, start, length) -- 提取子串
+CHAR_LENGTH(str)              -- 字符数
+LENGTH(str)                   -- 字节数
+UPPER(str), LOWER(str)        -- 大小写转换
+TRIM(str)                     -- 去除空格
+LEFT(str, length), RIGHT(str, length) -- 左右截取
+REPLACE(str, from_str, to_str) -- 替换
+INSTR(str, substr)            -- 查找位置
+LPAD(str, length, padstr)     -- 左填充
+RPAD(str, length, padstr)     -- 右填充</code></pre>
+                        </div>
+                    </div>
+
+                    <!-- 6.2 数值函数 -->
+                    <div>
+                        <h3 class="text-xl font-semibold mb-2">6.2 数值函数</h3>
+                        <div class="relative">
+                            <button class="copy-btn absolute top-2 right-2 bg-primary/10 hover:bg-primary/20 text-primary px-2 py-1 rounded text-sm">复制</button>
+                            <pre><code class="language-sql">ROUND(number, decimals)        -- 四舍五入
+CEILING(number)                -- 向上取整
+FLOOR(number)                  -- 向下取整
+ABS(number)                    -- 绝对值
+MOD(dividend, divisor)         -- 取模
+POWER(base, exponent)          -- 幂运算
+SQRT(number)                   -- 平方根
+RAND()                         -- 随机数</code></pre>
+                        </div>
+                    </div>
+
+                    <!-- 6.3 日期时间函数 -->
+                    <div>
+                        <h3 class="text-xl font-semibold mb-2">6.3 日期时间函数</h3>
+                        <div class="relative">
+                            <button class="copy-btn absolute top-2 right-2 bg-primary/10 hover:bg-primary/20 text-primary px-2 py-1 rounded text-sm">复制</button>
+                            <pre><code class="language-sql">-- 当前日期时间
+NOW(), CURRENT_TIMESTAMP       -- 当前日期时间
+CURDATE(), CURRENT_DATE        -- 当前日期
+CURTIME(), CURRENT_TIME        -- 当前时间
+
+-- 提取部分
+YEAR(date), MONTH(date), DAY(date)
+HOUR(time), MINUTE(time), SECOND(time)
+
+-- 日期计算
+DATE_ADD(date, INTERVAL expr unit)  -- 添加时间间隔
+DATE_SUB(date, INTERVAL expr unit)  -- 减去时间间隔
+DATEDIFF(date1, date2)              -- 日期差
+TIMESTAMPDIFF(unit, start, end)     -- 时间差
+
+-- 格式化
+DATE_FORMAT(date, format)           -- 格式化日期
+STR_TO_DATE(str, format)            -- 字符串转日期</code></pre>
+                        </div>
+                    </div>
+
+                    <!-- 6.4 条件函数 -->
+                    <div>
+                        <h3 class="text-xl font-semibold mb-2">6.4 条件函数</h3>
+                        <div class="relative">
+                            <button class="copy-btn absolute top-2 right-2 bg-primary/10 hover:bg-primary/20 text-primary px-2 py-1 rounded text-sm">复制</button>
+                            <pre><code class="language-sql">-- CASE 表达式
+SELECT 
+    column1,
+    CASE 
+        WHEN condition1 THEN result1
+        WHEN condition2 THEN result2
+        ELSE default_result
+    END AS new_column
+FROM table_name;
+
+-- IF 函数（MySQL）
+IF(condition, value_if_true, value_if_false)
+
+-- COALESCE（返回第一个非NULL值）
+COALESCE(column1, column2, 'default')
+
+-- NULLIF（两值相等返回NULL）
+NULLIF(expr1, expr2)</code></pre>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- 七、窗口函数 -->
+            <section id="window" class="mb-10">
+                <div class="flex justify-between items-center mb-4 cursor-pointer section-header">
+                    <h2 class="text-2xl font-bold text-primary">📌 七、窗口函数</h2>
+                    <button class="text-xl text-secondary toggle-btn">−</button>
+                </div>
+                <div class="section-content space-y-6">
+                    <div class="relative">
+                        <button class="copy-btn absolute top-2 right-2 bg-primary/10 hover:bg-primary/20 text-primary px-2 py-1 rounded text-sm">复制</button>
+                        <pre><code class="language-sql">-- 排名函数
+ROW_NUMBER() OVER (PARTITION BY ... ORDER BY ...)
+RANK() OVER (PARTITION BY ... ORDER BY ...)
+DENSE_RANK() OVER (PARTITION BY ... ORDER BY ...)
+NTILE(n) OVER (PARTITION BY ... ORDER BY ...)
+
+-- 聚合窗口函数
+SUM(column) OVER (PARTITION BY ...)
+AVG(column) OVER (PARTITION BY ...)
+COUNT(column) OVER (PARTITION BY ...)
+
+-- 偏移函数
+LAG(column, offset) OVER (PARTITION BY ... ORDER BY ...)
+LEAD(column, offset) OVER (PARTITION BY ... ORDER BY ...)
+FIRST_VALUE(column) OVER (PARTITION BY ... ORDER BY ...)
+LAST_VALUE(column) OVER (PARTITION BY ... ORDER BY ...)
+
+-- 示例
+SELECT 
+    department,
+    employee,
+    salary,
+    ROW_NUMBER() OVER (PARTITION BY department ORDER BY salary DESC) AS rank_in_dept,
+    AVG(salary) OVER (PARTITION BY department) AS dept_avg_salary,
+    LAG(salary) OVER (PARTITION BY employee_id ORDER BY date) AS prev_salary
+FROM employees;</code></pre>
+                    </div>
+                </div>
+            </section>
+
+            <!-- 八、索引管理 -->
+            <section id="index" class="mb-10">
+                <div class="flex justify-between items-center mb-4 cursor-pointer section-header">
+                    <h2 class="text-2xl font-bold text-primary">📌 八、索引管理</h2>
+                    <button class="text-xl text-secondary toggle-btn">−</button>
+                </div>
+                <div class="section-content space-y-6">
+                    <div class="relative">
+                        <button class="copy-btn absolute top-2 right-2 bg-primary/10 hover:bg-primary/20 text-primary px-2 py-1 rounded text-sm">复制</button>
+                        <pre><code class="language-sql">-- 创建索引
+CREATE INDEX index_name ON table_name (column1, column2, ...);
+
+-- 创建唯一索引
+CREATE UNIQUE INDEX index_name ON table_name (column);
+
+-- 创建复合索引
+CREATE INDEX index_name ON table_name (col1, col2, col3);
+
+-- 删除索引
+DROP INDEX index_name ON table_name;           -- MySQL
+DROP INDEX table_name.index_name;              -- SQL Server
+DROP INDEX index_name;                         -- PostgreSQL/Oracle</code></pre>
+                    </div>
+                </div>
+            </section>
+
+            <!-- 九、视图 -->
+            <section id="view" class="mb-10">
+                <div class="flex justify-between items-center mb-4 cursor-pointer section-header">
+                    <h2 class="text-2xl font-bold text-primary">📌 九、视图</h2>
+                    <button class="text-xl text-secondary toggle-btn">−</button>
+                </div>
+                <div class="section-content space-y-6">
+                    <div class="relative">
+                        <button class="copy-btn absolute top-2 right-2 bg-primary/10 hover:bg-primary/20 text-primary px-2 py-1 rounded text-sm">复制</button>
+                        <pre><code class="language-sql">-- 创建视图
+CREATE VIEW view_name AS
+SELECT columns
+FROM tables
+WHERE conditions;
+
+-- 创建可更新视图
+CREATE VIEW view_name AS
+SELECT columns
+FROM table
+WHERE conditions
+WITH CHECK OPTION;
+
+-- 修改视图
+CREATE OR REPLACE VIEW view_name AS
+SELECT columns
+FROM tables
+WHERE conditions;
+
+-- 删除视图
+DROP VIEW view_name;</code></pre>
+                    </div>
+                </div>
+            </section>
+
+            <!-- 十、存储过程和函数 -->
+            <section id="procedure" class="mb-10">
+                <div class="flex justify-between items-center mb-4 cursor-pointer section-header">
+                    <h2 class="text-2xl font-bold text-primary">📌 十、存储过程和函数</h2>
+                    <button class="text-xl text-secondary toggle-btn">−</button>
+                </div>
+                <div class="section-content space-y-6">
+                    <div class="relative">
+                        <button class="copy-btn absolute top-2 right-2 bg-primary/10 hover:bg-primary/20 text-primary px-2 py-1 rounded text-sm">复制</button>
+                        <pre><code class="language-sql">-- 创建存储过程
+CREATE PROCEDURE procedure_name
+    @param1 datatype,
+    @param2 datatype OUTPUT
+AS
+BEGIN
+    -- SQL 语句
+    SELECT @param2 = COUNT(*) FROM table WHERE column = @param1;
+END;
+
+-- 执行存储过程
+EXEC procedure_name @param1 = value1, @param2 = @output OUTPUT;
+
+-- 创建函数
+CREATE FUNCTION function_name (@param datatype)
+RETURNS return_datatype
+AS
+BEGIN
+    DECLARE @result datatype;
+    -- 计算逻辑
+    RETURN @result;
+END;
+
+-- 调用函数
+SELECT dbo.function_name(parameter);</code></pre>
+                    </div>
+                </div>
+            </section>
+
+            <!-- 十一、事务控制 (TCL) -->
+            <section id="tcl" class="mb-10">
+                <div class="flex justify-between items-center mb-4 cursor-pointer section-header">
+                    <h2 class="text-2xl font-bold text-primary">📌 十一、事务控制 (TCL)</h2>
+                    <button class="text-xl text-secondary toggle-btn">−</button>
+                </div>
+                <div class="section-content space-y-6">
+                    <div class="relative">
+                        <button class="copy-btn absolute top-2 right-2 bg-primary/10 hover:bg-primary/20 text-primary px-2 py-1 rounded text-sm">复制</button>
+                        <pre><code class="language-sql">-- 开始事务
+BEGIN TRANSACTION;    -- SQL Server
+START TRANSACTION;    -- MySQL
+
+-- 提交事务
+COMMIT;
+
+-- 回滚事务
+ROLLBACK;
+
+-- 保存点
+SAVEPOINT savepoint_name;
+ROLLBACK TO savepoint_name;
+
+-- 事务示例
+BEGIN TRY
+    BEGIN TRANSACTION;
+    
+    -- 一系列操作
+    UPDATE accounts SET balance = balance - 100 WHERE id = 1;
+    UPDATE accounts SET balance = balance + 100 WHERE id = 2;
+    
+    COMMIT;
+END TRY
+BEGIN CATCH
+    ROLLBACK;
+    -- 错误处理
+END CATCH;</code></pre>
+                    </div>
+                </div>
+            </section>
+
+            <!-- 十二、权限管理 (DCL) -->
+            <section id="dcl" class="mb-10">
+                <div class="flex justify-between items-center mb-4 cursor-pointer section-header">
+                    <h2 class="text-2xl font-bold text-primary">📌 十二、权限管理 (DCL)</h2>
+                    <button class="text-xl text-secondary toggle-btn">−</button>
+                </div>
+                <div class="section-content space-y-6">
+                    <div class="relative">
+                        <button class="copy-btn absolute top-2 right-2 bg-primary/10 hover:bg-primary/20 text-primary px-2 py-1 rounded text-sm">复制</button>
+                        <pre><code class="language-sql">-- 授予权限
+GRANT privilege_list
+ON object
+TO user_or_role
+[WITH GRANT OPTION];
+
+-- 撤销权限
+REVOKE privilege_list
+ON object
+FROM user_or_role;
+
+-- 权限示例
+GRANT SELECT, INSERT, UPDATE ON employees TO user1;
+GRANT ALL PRIVILEGES ON database.* TO 'username'@'hostname';
+REVOKE DELETE ON employees FROM user1;
+
+-- 创建用户
+CREATE USER username IDENTIFIED BY 'password';
+
+-- 修改密码
+ALTER USER username IDENTIFIED BY 'new_password';
+
+-- 删除用户
+DROP USER username;</code></pre>
+                    </div>
+                </div>
+            </section>
+
+            <!-- 十三、实用技巧 -->
+            <section id="tips" class="mb-10">
+                <div class="flex justify-between items-center mb-4 cursor-pointer section-header">
+                    <h2 class="text-2xl font-bold text-primary">📌 十三、实用技巧</h2>
+                    <button class="text-xl text-secondary toggle-btn">−</button>
+                </div>
+                <div class="section-content space-y-6">
+                    <!-- 13.1 分页查询 -->
+                    <div>
+                        <h3 class="text-xl font-semibold mb-2">13.1 分页查询</h3>
+                        <div class="relative">
+                            <button class="copy-btn absolute top-2 right-2 bg-primary/10 hover:bg-primary/20 text-primary px-2 py-1 rounded text-sm">复制</button>
+                            <pre><code class="language-sql">-- MySQL/PostgreSQL
+SELECT * FROM table_name
+LIMIT 10 OFFSET 20;  -- 跳过20行，取10行
+
+-- SQL Server
+SELECT * FROM table_name
+ORDER BY id
+OFFSET 20 ROWS
+FETCH NEXT 10 ROWS ONLY;
+
+-- Oracle
+SELECT * FROM (
+    SELECT t.*, ROWNUM rnum
+    FROM (SELECT * FROM table_name ORDER BY id) t
+    WHERE ROWNUM <= 30
+) WHERE rnum > 20;</code></pre>
+                        </div>
+                    </div>
+
+                    <!-- 13.2 递归查询 -->
+                    <div>
+                        <h3 class="text-xl font-semibold mb-2">13.2 递归查询</h3>
+                        <div class="relative">
+                            <button class="copy-btn absolute top-2 right-2 bg-primary/10 hover:bg-primary/20 text-primary px-2 py-1 rounded text-sm">复制</button>
+                            <pre><code class="language-sql">-- 递归查询层级结构
+WITH RECURSIVE cte_name AS (
+    -- 锚定成员
+    SELECT id, name, parent_id, 1 AS level
+    FROM categories
+    WHERE parent_id IS NULL
+    
+    UNION ALL
+    
+    -- 递归成员
+    SELECT c.id, c.name, c.parent_id, level + 1
+    FROM categories c
+    INNER JOIN cte_name ct ON c.parent_id = ct.id
+)
+SELECT * FROM cte_name;</code></pre>
+                        </div>
+                    </div>
+
+                    <!-- 13.3 性能优化提示 -->
+                    <div>
+                        <h3 class="text-xl font-semibold mb-2">13.3 性能优化提示</h3>
+                        <div class="relative">
+                            <button class="copy-btn absolute top-2 right-2 bg-primary/10 hover:bg-primary/20 text-primary px-2 py-1 rounded text-sm">复制</button>
+                            <pre><code class="language-sql">-- 1. 使用EXPLAIN分析查询
+EXPLAIN SELECT * FROM table WHERE condition;
+
+-- 2. 避免SELECT *
+SELECT column1, column2 FROM table;
+
+-- 3. 使用EXISTS代替IN（大数据集）
+SELECT * FROM table1 
+WHERE EXISTS (SELECT 1 FROM table2 WHERE table1.id = table2.id);
+
+-- 4. 为WHERE、JOIN、ORDER BY的列创建索引
+
+-- 5. 避免在WHERE子句中对列进行函数操作
+-- 不好
+SELECT * FROM table WHERE YEAR(date_column) = 2023;
+-- 好
+SELECT * FROM table WHERE date_column >= '2023-01-01' AND date_column < '2024-01-01';</code></pre>
+                        </div>
+                    </div>
+                </div>
+            </section>
+        </main>
+    </div>
+
+    <!-- 页脚 -->
+    <footer class="bg-white mt-10 py-6 border-t border-gray-200">
+        <div class="container mx-auto px-4 text-center text-secondary">
+            <p>SQL 速查表 | 结构化完整版 © 2025 | 纯前端可直接使用</p>
+        </div>
+    </footer>
+
+    <!-- JavaScript 功能实现 -->
+    <script>
+        // 1. 章节折叠/展开功能
+        document.querySelectorAll('.section-header').forEach(header => {
+            header.addEventListener('click', () => {
+                const content = header.nextElementSibling;
+                const toggleBtn = header.querySelector('.toggle-btn');
+                // 切换显示/隐藏
+                content.classList.toggle('hidden');
+                // 切换按钮符号
+                toggleBtn.textContent = content.classList.contains('hidden') ? '+' : '−';
+            });
+        });
+
+        // 2. 代码复制功能
+        document.querySelectorAll('.copy-btn').forEach(btn => {
+            btn.addEventListener('click', async (e) => {
+                const codeBlock = e.target.nextElementSibling;
+                const code = codeBlock.textContent;
+                try {
+                    await navigator.clipboard.writeText(code);
+                    // 临时修改按钮文字提示复制成功
+                    const originalText = btn.textContent;
+                    btn.textContent = '已复制';
+                    btn.classList.add('bg-green-100', 'text-green-700');
+                    setTimeout(() => {
+                        btn.textContent = originalText;
+                        btn.classList.remove('bg-green-100', 'text-green-700');
+                    }, 1500);
+                } catch (err) {
+                    btn.textContent = '复制失败';
+                    btn.classList.add('bg-red-100', 'text-red-700');
+                    setTimeout(() => {
+                        btn.textContent = '复制';
+                        btn.classList.remove('bg-red-100', 'text-red-700');
+                    }, 1500);
+                }
+            });
+        });
+
+        // 3. 导航栏滚动高亮当前章节
+        const sections = document.querySelectorAll('section');
+        const navItems = document.querySelectorAll('.nav-item');
+
+        window.addEventListener('scroll', () => {
+            let current = '';
+            sections.forEach(section => {
+                const sectionTop = section.offsetTop;
+                const sectionHeight = section.clientHeight;
+                if (scrollY >= (sectionTop - 100)) {
+                    current = section.getAttribute('id');
+                }
+            });
+
+            navItems.forEach(item => {
+                item.classList.remove('nav-active');
+                if (item.getAttribute('href').substring(1) === current) {
+                    item.classList.add('nav-active');
+                }
+            });
+        });
+
+        // 4. 移动端菜单切换
+        const menuBtn = document.getElementById('menuBtn');
+        const sidebar = document.getElementById('sidebar');
+        if (menuBtn && sidebar) {
+            menuBtn.addEventListener('click', () => {
+                sidebar.classList.toggle('hidden');
+            });
+        }
+
+        // 页面加载完成后执行代码高亮
+        document.addEventListener('DOMContentLoaded', () => {
+            Prism.highlightAll();
+        });
+    </script>
+</body>
+</html>
